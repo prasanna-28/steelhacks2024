@@ -1,0 +1,97 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsfonts}
+
+\begin{document}
+
+\section*{Sets}
+
+\textbf{Natural numbers} are represented by the set:
+$$\mathbb{N} = \{0, 1, 2, ...\}$$
+
+\textbf{Integers} are represented by the set:
+$$\mathbb{Z} = \{..., -2, -1, 0, 1, 2, ...\}$$
+
+\textbf{Rational numbers} are represented by the set:
+$$\mathbb{Q} = \left\{ \frac{k}{n} \mid k \in \mathbb{Z}, n \in \mathbb{N}, n \neq 0 \right\}$$
+
+\textbf{Real numbers} are represented by the set $\mathbb{R}$.
+
+\textbf{Complex numbers} are represented by the set:
+$$\mathbb{C} = \{a + ib \mid a, b \in \mathbb{R}\}$$
+where $i$ is the \textit{imaginary unit}, characterized by $i^2 = -1$.
+
+$d$-dimensional space over $\mathbb{R}$ is:
+$$\mathbb{R}^d = \{(a_1, ..., a_d) \mid a_i \in \mathbb{R}\}$$
+
+The space of infinite sequences of real numbers is:
+$$\mathbb{R}^\infty = \{(a_0, a_1, a_2, ...) \mid a_i \in \mathbb{R}\}$$
+
+\section*{Set Operations}
+
+Given two sets $A$ and $B$:
+
+\textbf{Union:} The union of $A$ and $B$, denoted $A \cup B$, is the set of all elements that are in $A$, in $B$, or in both.
+$$A \cup B = \{c \mid c \in A \text{ or } c \in B\}$$
+
+\textbf{Intersection:} The intersection of $A$ and $B$, denoted $A \cap B$, is the set of all elements that are in both $A$ and $B$.
+$$A \cap B = \{c \mid c \in A \text{ and } c \in B\}$$
+
+\textbf{Difference:} The difference of $A$ and $B$, denoted $A \setminus B$, is the set of all elements that are in $A$ but not in $B$.
+$$A \setminus B = \{c \in A \mid c \notin B\}$$
+
+\textbf{Symmetric Difference:} The symmetric difference of $A$ and $B$, denoted $A \Delta B$, can be expressed in the following ways:
+\begin{align*}
+A \Delta B &= A \setminus B \cup B \setminus A \\
+&= (A \cup B) \setminus (A \cap B)
+\end{align*}
+
+\section*{Indexed Families of Sets}
+
+Let $(A_\alpha)_{\alpha \in I}$ be an indexed family of sets, with index set $I$.
+
+\textbf{Union:} The union of the family, denoted $\bigcup_{\alpha \in I} A_\alpha$, is:
+$$\bigcup_{\alpha \in I} A_\alpha = \{\alpha \mid a \in A_\alpha \text{ for some } \alpha \in I\}$$
+This can also be expressed as:
+$$\bigcup_{\alpha \in I} A_\alpha = \{a \mid \exists \alpha \in I \text{ such that } a \in A_\alpha\}$$
+
+\textbf{Intersection:} The intersection of the family, denoted $\bigcap_{\alpha \in I} A_\alpha$, is:
+$$\bigcap_{\alpha \in I} A_\alpha = \{a \mid a \in A_\alpha \text{ for every } \alpha \in I\}$$
+This can also be expressed as:
+$$\bigcap_{\alpha \in I} A_\alpha = \{a \mid \forall \alpha \in I, a \in A_\alpha\}$$
+
+\section*{Maps}
+
+A \textbf{map} (also called a \textit{function}, \textit{mapping}, or \textit{transformation}) is a rule that assigns a unique output to each input.
+
+Let $A$ and $B$ be sets. A map $f$ from $A$ to $B$, denoted $f: A \to B$, is an assignment such that for every element $a \in A$, there exists a unique element $b \in B$, called the \textit{value of} $f$ \textit{at} $a$ and denoted by $f(a)$.
+
+\textbf{Note:} While $f$ assigns a value to every element in $A$, there may exist elements in $B$ that are not mapped to by any element in $A$. 
+
+\textbf{Domain and Target Space:} Given a map $f: A \to B$:
+\begin{itemize}
+\item $A$ is called the \textit{domain} of $f$.
+\item $B$ is called the \textit{target space} of $f$.
+\end{itemize}
+
+\textbf{Restriction:} If $A' \subseteq A$, then the \textit{restriction} of $f$ to $A'$, denoted by $f' = f|_{A'}$, is the map $f': A' \to B$ defined by $f'(a) = f(a)$ for all $a \in A'$.
+
+\textbf{Examples:}
+\begin{enumerate}
+\item $f: \mathbb{R} \to \mathbb{R}$, $x \mapsto \sin(x)$. This map is often written as $f = \sin$.
+
+\item $f: \mathbb{R} \setminus \{0\} \to \mathbb{R}$, $x \mapsto \frac{1}{x}$.
+
+\item $g: \mathbb{R} \to \mathbb{R}$, $x \mapsto \begin{cases}
+x^2 & \text{if } x \neq 0, \\
+1 & \text{if } x = 0.
+\end{cases}$
+
+\item $f: V \to \{\text{set of subspaces of } V\}$, $v \mapsto \text{span}(v)$, where $V$ is a vector space.
+
+\item $D: P(\mathbb{R}) \to P(\mathbb{R})$, $p(x) \mapsto p'(x)$, where $P(\mathbb{R})$ is the set of polynomials with real coefficients and $p'(x)$ is the derivative of $p(x)$.
+\end{enumerate}
+
+\end{document}
