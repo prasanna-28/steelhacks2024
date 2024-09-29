@@ -1,0 +1,98 @@
+```latex
+\documentclass{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\title{Sets and Maps}
+
+\begin{document}
+
+\maketitle
+
+\section{Sets}
+
+\textbf{Standard Sets}
+
+This section defines common number sets using set-builder notation:
+
+* **N** (Natural Numbers):  $\{0, 1, 2, ... \}$
+* **Z** (Integers): $\{..., -2, -1, 0, 1, 2, ... \}$
+* **Q** (Rational Numbers):  $\{ \frac{k}{n} \mid k, n \in \mathbb{Z}, n \neq 0 \}$ (all numbers expressible as a fraction)
+* **R** (Real Numbers): Includes all rational and irrational numbers.
+* **C** (Complex Numbers): $\{ a + ib \mid a, b \in \mathbb{R} \}$ where  $i$ is the \textit{imaginary unit} ($i^2 = -1$).
+* **R**$^d$ ($d$-dimensional space):  $\{ (a_1, ..., a_d) \mid a_i \in \mathbb{R} \}$ (ordered sets of real numbers)
+* **R**$^\infty$ (space of infinite sequences of reals):  $\{ (a_0, a_1, a_2, ...) \mid a_i \in \mathbb{R} \}$
+
+\section{Set Operations}
+
+\textbf{Basic Operations}
+
+* \textbf{Union} ($\cup$):
+ $$ A \cup B = \{ c \mid c \in A \text{ or } c \in B \} $$ (all elements in $A$ or $B$)
+
+* \textbf{Intersection} ($\cap$): 
+$$ A \cap B = \{ c \mid c \in A \text{ and } c \in B \} $$ (elements common to both)
+
+\textbf{Other Operations}
+
+* \textbf{Difference} ($-$): 
+$$A - B = \{ c \in A \mid c \notin B \} $$ (elements in $A$ but not in $B$)
+
+* \textbf{Symmetric Difference} ($\Delta$): 
+$$ A \Delta B = (A \cup B) - (A \cap B) $$ (elements in either $A$ or $B$, but not both)
+
+\section{Indexed Families of Sets}
+
+\textbf{Introduction}
+
+This section introduces the concept of a \textit{family} of sets \textit{indexed} by a set $I$.
+
+\textbf{Examples}
+
+* \textbf{Example 1:} $I = \mathbb{N}$ (natural numbers), $A_\alpha = \{ \alpha, \alpha + 1 \}$ (each set contains a natural number and its successor).
+
+* \textbf{Example 2:} $I = \mathbb{R}^+$ (positive real numbers),  $A_x = [x, \infty)$ (each set is a closed interval starting at $x$ and extending to infinity).
+
+\textbf{Union and Intersection of Indexed Families}
+
+* \textbf{Union:}
+ $$ \bigcup_{\alpha \in I} A_\alpha = \{ a \mid a \in A_\alpha \text{ for some } \alpha \in I \} = \{ a \mid \exists \alpha \in I \text{ such that } a \in A_\alpha \} $$
+
+* \textbf{Intersection:} 
+$$ \bigcap_{\alpha \in I} A_\alpha = \{ a \mid a \in A_\alpha \text{ for every } \alpha \in I \} = \{ a \mid \forall \alpha \in I, a \in A_\alpha \} $$
+
+\section{Maps (Functions)}
+
+\textbf{Basic Definitions}
+
+* \textbf{Map/Function/Mapping/Transformation:} All these terms refer to the same concept - a rule assigning elements from one set to another.
+
+* \textbf{Domain and Target Space:} Given a map  $f: A \rightarrow B$, $A$ is the \textit{domain} (where the function takes input) and $B$ is the \textit{target space} (where the output lies).
+
+* \textbf{Assignment and Value:} For each $a$ in the domain $A$, $f$ assigns a unique element $b$ in the target space $B$, called the \textit{value} of $f$ at $a$ and denoted by $f(a)$. 
+
+\textbf{Restriction of a Map}
+
+If $A' \subseteq A$, the \textit{restriction} of $f$ to $A'$ is a new function $f': A' \rightarrow B$ such that $f'(a) = f(a)$ for all $a$ in $A'$.
+
+\textbf{Examples of Maps}
+
+* **Example 1:**  $f: \mathbb{R} \rightarrow \mathbb{R}, x \mapsto \sin(x)$  ($f$ is the sine function)
+
+* **Example 2:**  $f: \mathbb{R} \setminus \{0\} \rightarrow \mathbb{R}, x \mapsto \frac{1}{x}$ ($f$ is the reciprocal function)
+
+* **Example 3:** $g: \mathbb{R} \rightarrow \mathbb{R}, g(x) = \begin{cases} 
+      x^2 & x \neq 0 \\
+      0 & x = 0 
+   \end{cases}$
+ ($g$ is a piecewise function)
+
+* **Example 4:**  $f: V \rightarrow \{\text{set of all subspaces of } V\}, v \mapsto \text{span}(v)$, where $V$ is a vector space. ($f$ maps a vector to its span)
+
+* **Example 5:** $D: P(\mathbb{R}) \rightarrow P(\mathbb{R}), p(x) \mapsto p'(x)$  ($D$ is the derivative operator on the set of polynomials with real coefficients) 
+
+\end{document}
+```

@@ -21,7 +21,7 @@ UPLOAD_FOLDER = "app/static/uploads"
 PDF_FOLDER = "app/static/pdf"
 
 genai.configure(api_key=GEMINI_API)
-model = genai.GenerativeModel("gemini-1.5-flash")
+model = genai.GenerativeModel("gemini-1.5-pro")
 
 chats = {}
 
