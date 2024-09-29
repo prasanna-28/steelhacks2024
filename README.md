@@ -13,7 +13,7 @@
 
 ## About the Project
 
-PantherNotes revolutionizes the way students engage with their study materials. By simply uploading your handwritten notes and specifying your course, the platform provides a suite of tools to enhance your learning journey:
+PantherNotes revolutionizes the way students at the University of Pittsburgh engage with their study materials. By simply uploading your handwritten notes and specifying your course, the platform provides a suite of AI powered tools to enhance your learning journey:
 
 1. **Elegant Notes Conversion**: Transforms your handwritten notes into a clean, professionally typeset PDF using LaTeX.
 
