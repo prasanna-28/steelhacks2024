@@ -1,5 +1,9 @@
 # PantherNotes
 
+## Authors
+
+Prasanna Pantha (ppantha@andrew.cmu.edu), Owen Lalis (olalis@andrew.cmu.edu), Tyler Jacobus (tjacobus@andrew.cmu.edu), Aaron HuSun (ahusun@andrew.cmu.edu)
+
 ## Table of Contents
 
 - [About the Project](#about-the-project)
