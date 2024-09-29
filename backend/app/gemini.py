@@ -6,8 +6,7 @@ import subprocess
 import asyncio
 import isodate
 from env import GEMINI_API, YOUTUBE_KEY
-from flask import Flask, request, jsonify, send_file
-app = Flask(__name__)
+from flask import jsonify
 
 # DATABASE_textbook = {
 #     "PHYS 2373": {
@@ -125,7 +124,7 @@ def make_glossary(genai_file):
     """
     response = model.generate_content([genai_file, GLOSSARY_PROMPT])
     # print(response.text)
-    return response.text
+    return json.loads(response.text)
 
 def make_summary(genai_file):
     SUMMARY_PROMPT = r"""
@@ -138,24 +137,34 @@ def make_summary(genai_file):
     # print(response.text)
     return response.text
 
-def make_quiz(latex):
-    prompt = r'''The following is a latex file that compiles notes and references for some class. 
-    I am taking this class and I want you to be a TA. Make me a small quiz on this material. 
-    Give me questions on each line. Start with definitions in a multiple choice question format. 
-    There should be 3 wrong answers and 1 right answer. Then give me a few harder problems. 
-    Return this all in a json format. Do not include any control characters that json.loads
-    cannot understand (\n, \t).
-    '''
-    response = model.generate_content(prompt + latex)
-    text = response.text
-    text = text.splitlines()
-    text.pop(0)
-    text.pop()
-    # print(text)
-    text = '\n'.join(text)
-    # print(text)
-    quiz_json = json.loads(text)
-    return quiz_json
+def make_quiz(genai_file):
+    # prompt = r'''The following is a latex file that compiles notes and references for some class. 
+    # I am taking this class and I want you to be a TA. Make me a small quiz on this material. 
+    # Give me questions on each line. Start with definitions in a multiple choice question format. 
+    # There should be 3 wrong answers and 1 right answer. Then give me a few harder problems.
+    # Return this all in a json format. Do not include any control characters that json.loads
+    # cannot understand (\n, \t).
+    # '''
+
+    QUIZ_PROMPT = r"""
+    Here is a latex document of lecture notes.
+    You are a teaching assistant for this course. 
+    Make a quiz of five multiple choice problems on this material.
+    Each multiple choice question should have three wrong answers and one correct answer.
+    Return your glossary as a JSON string in plain text (do not use \n or \t, markdown, or latex).
+
+    EXAMPLE: 
+        "\begin{document} A natural number is a whole number greater than 0. \end{document}" ->
+        "{
+            "problem1": {
+                "question": "Which of the following is a natural number?"
+                "wrong_answers": ["0.1", "-2", "pi"]
+                "correct_answer": "4"
+            }
+        }"
+    """
+    response = model.generate_content([genai_file, QUIZ_PROMPT])
+    return json.loads(response.text)
 
 def get_response(message, latex, message_history):
     prompt = '''The compiled notes and chat history are all for context:
@@ -295,22 +304,26 @@ async def start_processing(course, file_id):
         vids.append(youtube_search(q))
     link = get_page_link(course, genai_file)
 
-    return jsonify({
+    return {
         "filepath": f"{PDF_FOLDER}/{file_id}.pdf",
         "glossary": glossary,
         "summary": summary,
         "link": link
-    })
+    }
 
-async def quiz_processing():
-    pass
+def quiz_processing(file_id):
+    latex_fp = f"{PDF_FOLDER}/{file_id}.txt"
+    genai_file = upload_latex(latex_fp)
+    return make_quiz(genai_file)
+
 
 
 if __name__ == "__main__":
     name = "prelim_short"
     with app.app_context():
-        ret = start_processing("MATH 0001", name).json
-    print(ret["filepath"], ret["glossary"], ret["summary"], ret["link"], sep="\n")
+        ret = quiz_processing(name)
+    print(ret)
+    # print(ret["filepath"], ret["glossary"], ret["summary"], ret["link"], sep="\n")
     # print(make_glossary(genai_file))
     # print(make_summary(genai_file))
     

@@ -1,0 +1,92 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amsfonts}
+\title{Lecture Notes on Sets and Maps}
+\author{}
+\date{}
+\begin{document}
+\maketitle
+\section{Sets}
+The following are common sets in mathematics.
+\begin{align*}
+\mathbb{N} &= \{0,1,2, \dots\} &\text{ *natural numbers* } \\
+\mathbb{Z} &= \{\dots, -2,-1,0,1,2, \dots\} &\text{ *integers* } \\
+\mathbb{Q} &= \left\{ \frac{k}{n} \mid k,n \in \mathbb{N}, n\neq0 \right\} &\text{ *rationals* }\\
+\mathbb{R} &= &\text{ *real numbers* }\\
+\mathbb{C} &= \{a+ib \mid a,b \in \mathbb{R}\} &\text{ *complex numbers* }\\
+&\text{where *i* is the *imaginary unit* characterized by } i^2=-1.\\
+\mathbb{R}^d &= \{(a_1,\dots,a_d) \mid a_i \in \mathbb{R}\} &\text{ *d-dimensional space* } \\
+\mathbb{R}^{\infty} &= \{(a_0,a_1,a_2,\dots) \mid a_i \in \mathbb{R}\} &\text{ *space of infinite sequences of reals* } 
+\end{align*}
+\section{Set Operations}
+Let $A,B$ be *sets*.  The following are the common set operations:
+\begin{align*}
+A\cup B &= \{c \mid c \in A \text{ or } c \in B\} &\text{ *union* }\\
+A \cap B &= \{c \mid c \in A \text{ and } c\in B\} &\text{ *intersection* }\\
+A \backslash B &= \{c \in A \mid c \notin B \} &\text{ *difference* }\\
+A \bigtriangleup B &= A \backslash B \cup B \backslash A &\text{ *symmetric difference* }
+\end{align*}
+\section{Indexed Families of Sets}
+Let $(A_\alpha)_{\alpha \in I}$ be an *indexed family of sets* (index set $I$).
+\begin{itemize}
+\item **Example 1:**  Let $I = \mathbb{N}$ and $A_\alpha := \{\alpha, \alpha + 1\}$. 
+\item **Example 2:** Let $I = \mathbb{R}^+ = \{x \in \mathbb{R} \mid x > 0\}$ and $A_\alpha := [\alpha, \infty)$.
+\end{itemize}
+The following operations are useful when working with indexed families of sets:
+\begin{align*}
+\bigcup_{\alpha \in I} A_\alpha &= \{a \mid a \in A_\alpha \text{ for some } \alpha \in I\}\\
+&= \{a \mid \exists \alpha \in I \text{ such that } a \in A_\alpha\} &\text{*union*}\\
+\bigcap_{\alpha \in I} A_\alpha &= \{a \mid a \in A_\alpha \text{ for every } \alpha \in I\} &\text{*intersection*}
+\end{align*}
+\section{Maps}
+A *map* (or *function* or *mapping* or *transformation*) is an assignment from one set to another.
+\begin{itemize}
+\item Let $A,B$ be sets.  A map $f$ is an assignment:
+\[\begin{aligned}
+f: A &\to B\\
+a &\mapsto f(a).
+\end{aligned}\]
+For each $a \in A$, $f$ assigns a unique $b \in B$ which is called the *value* of $f$ at $a$ and is denoted by $f(a)$.
+\item *Note:* $f$ assigns to each $a \in A$ a value, but there may exist $b \in B$ that is not equal to $f(a)$ for any $a \in A$.
+\item $A$ is called the *domain* (of definition) of $f$.
+\item $B$ is called the *target space* of $f$.
+\end{itemize}
+\begin{itemize}
+\item **Example 1:** Let $f: \mathbb{R} \to \mathbb{R}$ be the *sine function*:
+\[\begin{aligned}
+f: \mathbb{R} &\to \mathbb{R}\\
+x &\mapsto \sin(x)
+\end{aligned}\]
+\item **Example 2:** Let $f: \mathbb{R} \backslash \{0\} \to \mathbb{R}$ be the function
+\[\begin{aligned}
+f: \mathbb{R} \backslash \{0\} &\to \mathbb{R}\\
+x &\mapsto 1/x
+\end{aligned}\]
+\item **Example 3:** Let $g: \mathbb{R} \to \mathbb{R}$ be the function
+\[\begin{aligned}
+g: \mathbb{R} &\to \mathbb{R}\\
+x &\mapsto \begin{cases}
+1/x & \text{ if } x\neq 0\\
+0 & \text{ if } x=0.
+\end{cases}
+\end{aligned}\]
+\item **Example 4:** Let $f: V \to \text{set of subspaces of } V = S$ be the function
+\[\begin{aligned}
+f: V &\to S \\
+v &\mapsto \text{span}(v)
+\end{aligned}\]
+where $V$ is a vector space. 
+\item **Example 5:** Let $D: P(\mathbb{R}) \to P(\mathbb{R})$ be the *derivative function*
+\[\begin{aligned}
+D: P(\mathbb{R}) &\to P(\mathbb{R})\\
+p(x) &\mapsto p'(x).
+\end{aligned}\]
+\end{itemize}
+\section{Restriction}
+If $A' \subset A$, then the map $f'$
+\[\begin{aligned}
+f': A' &\to B\\
+a &\mapsto f'(a) := f(a)
+\end{aligned}\]
+is called the *restriction* of $f$ to $A'$ (denoted by $f' = f|_{A'}$).
+\end{document}

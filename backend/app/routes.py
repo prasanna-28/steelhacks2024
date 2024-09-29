@@ -3,13 +3,13 @@ from gemini import *
 import uuid
 import os
 import asyncio
+from flask_cors import CORS
 
 DATABASE = dict()
 DATABASE_textbook = dict()
 
-UPLOAD_FOLDER = "static/uploads"
-
 app = Flask(__name__)
+CORS(app)
 
 # Assume DATABASE_textbook is a pre-existing dictionary
 # DATABASE_textbook = {
@@ -36,18 +36,21 @@ async def background_process(course, file_id):
     processing_results[file_id] = await start_processing(course, file_id)
     processing_status[file_id] = "done"
 
+@app.route('/')
+def home():
+    return 'hello aaron'
+
 @app.route('/get_pdf', methods=['POST'])
-async def get_pdf():    
-    if "file" not in request.files():
-        return jsonify({'error': "file doesn't exist"})
-    
-    file = request.files()["file"]
+async def get_pdf():
+    if "file" not in request.files:
+        return jsonify({'error': "no file provided"})
+    file = request.files["file"]
     if file.filename == '':
         return jsonify({'error': 'No selected file'}), 400
-    
-    if "course" not in request.json():
+
+    if "course" not in request.args:
         return jsonify({"error": "course doesn't exist"})
-    course = request.json()["course"]
+    course = request.args.get("course")
 
     file_id = str(uuid.uuid4())
     file_path = f"{UPLOAD_FOLDER}/{file_id}.pdf"
@@ -68,10 +71,10 @@ def download_file(filename):
 
 
 @app.route('/get_quizzes', methods=['POST'])
-def get_quizz():
+def get_quiz():
     # uuid = request.args['uuid']
     uuid = request.get_json()['uuid']
-    return make_quiz(DATABASE[uuid]['latex'])
+    return quiz_processing(DATABASE[uuid]['latex'])
 
 
 @app.route('/get_response', methods=['GET'])
@@ -81,6 +84,18 @@ def get_respone():
     return get_response(message, DATABASE[uuid]['latex'], DATABASE[uuid]['message_history'])
 
 
-@app.route('/get_textbook', methods=['POST'])
-def get_textbook():
-    get_page_link()
+# @app.route('/get_textbook', methods=['POST'])
+# def get_textbook():
+#     get_page_link()
+
+@app.route('/status', methods=['GET'])
+def check_status():
+    if 'file_id' not in request.args:
+        assert(0)
+    file_id = request.args.get('file_id')
+    if file_id not in processing_status or processing_status[file_id] == "Processing":
+        return jsonify({"status":"Processing"}), 200
+    return jsonify({"status":"done", "result":processing_results[file_id]}), 200
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)

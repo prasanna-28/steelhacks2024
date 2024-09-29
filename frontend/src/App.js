@@ -57,24 +57,24 @@ function InitialPage() {
     // Prepare form data
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('course', courseNumber);
 
     try {
       // Send POST request to /get_pdf
-      const response = await fetch('/get_pdf', {
+      const response = await fetch(`http://127.0.0.1:5000/get_pdf?course=${encodeURIComponent(courseNumber)}`, {
         method: 'POST',
         body: formData,
       });
 
       if (!response.ok) {
-        throw new Error('Failed to upload file.');
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to upload file.');
       }
 
       const data = await response.json();
-      const uuid = data.uuid;
+      const file_id = data.file_id;
 
-      // Navigate to Loading Page with uuid and courseNumber
-      navigate('/loading', { state: { uuid, courseNumber } });
+      // Navigate to Loading Page with file_id and courseNumber
+      navigate('/loading', { state: { file_id, courseNumber } });
     } catch (err) {
       setError(err.message || 'Something went wrong.');
     }
@@ -126,33 +126,32 @@ function InitialPage() {
 function LoadingPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { uuid, courseNumber } = location.state || {};
+  const { file_id, courseNumber } = location.state || {};
 
-  const [status, setStatus] = useState('processing');
-  const [data, setData] = useState(null);
+  const [status, setStatus] = useState('Processing');
   const [error, setError] = useState('');
 
   // Polling function to check status every 2 seconds
   useEffect(() => {
-    if (!uuid) {
+    if (!file_id) {
       setError('No file ID provided.');
       return;
     }
 
     const interval = setInterval(async () => {
       try {
-        const response = await fetch(`/status?file_id=${uuid}`);
+        const response = await fetch(`http://127.0.0.1:5000/status?file_id=${file_id}`);
         if (!response.ok) {
-          throw new Error('Failed to fetch status.');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch status.');
         }
 
         const result = await response.json();
         if (result.status === 'done') {
           setStatus('done');
-          setData(result.results);
           clearInterval(interval);
           // Navigate to Student Dashboard with received data
-          navigate('/dashboard', { state: { data: result.results, uuid, courseNumber } });
+          navigate('/dashboard', { state: { data: result.results, file_id, courseNumber } });
         } else {
           setStatus(result.status);
         }
@@ -163,7 +162,7 @@ function LoadingPage() {
     }, 2000); // 2 seconds interval
 
     return () => clearInterval(interval);
-  }, [uuid, navigate, courseNumber]);
+  }, [file_id, navigate, courseNumber]);
 
   return (
     <div className="container mx-auto p-4">
@@ -174,7 +173,7 @@ function LoadingPage() {
         <div className="flex items-center space-x-2">
           {/* Loading Spinner */}
           <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-blue-500"></div>
-          <span>Loading...</span>
+          <span>{status}...</span>
         </div>
       )}
     </div>
@@ -185,23 +184,47 @@ function LoadingPage() {
 
 function StudentDashboard() {
   const location = useLocation();
-  const { data, uuid, courseNumber } = location.state || {};
+  const { data, file_id, courseNumber } = location.state || {};
   const navigate = useNavigate();
 
   const [chatMessages, setChatMessages] = useState([]);
   const [chatInput, setChatInput] = useState('');
-  const [activeTab, setActiveTab] = useState('chapter1');
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredGlossary, setFilteredGlossary] = useState([]);
-  const [textbookLinks, setTextbookLinks] = useState({ chapter1: [], chapter2: [], chapter3: [] });
+  const [textbookLink, setTextbookLink] = useState('');
+  const [glossaryTerms, setGlossaryTerms] = useState([]);
+  const [videos, setVideos] = useState([]);
+  const [summary, setSummary] = useState('');
 
-  // Glossary Terms (can be fetched from backend if dynamic)
-  const glossaryTerms = [
-    { term: 'React', definition: 'A JavaScript library for building user interfaces.' },
-    { term: 'Component', definition: 'Reusable pieces of UI in React.' },
-    { term: 'State', definition: 'An object that determines how a component renders and behaves.' },
-    // Add more terms as needed
-  ];
+  // Extract data from the response
+  useEffect(() => {
+    if (data) {
+      const pdfUrl = data.filepath;
+      const glossary = data.glossary;
+      const summaryText = data.summary;
+      const link = data.link;
+      const videoData = data.videos;
+
+      setTextbookLink(link);
+      setSummary(summaryText);
+      setVideos(videoData || []);
+
+      // Parse glossary JSON
+      try {
+        const glossaryObj = JSON.parse(glossary);
+        const terms = Object.keys(glossaryObj).map((key) => ({
+          term: key,
+          definition: glossaryObj[key],
+        }));
+        setGlossaryTerms(terms);
+        setFilteredGlossary(terms);
+      } catch (err) {
+        console.error('Failed to parse glossary:', err);
+      }
+
+      // Set PDF URL (if needed elsewhere)
+    }
+  }, [data]);
 
   // Handle chat form submission
   const handleChatSubmit = async (e) => {
@@ -212,16 +235,17 @@ function StudentDashboard() {
 
       try {
         // Send POST request to /get_response
-        const response = await fetch('/get_response', {
+        const response = await fetch('http://127.0.0.1:5000/get_response', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ question: chatInput, uuid }),
+          body: JSON.stringify({ question: chatInput, uuid: file_id }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to get response.');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to get response.');
         }
 
         const resData = await response.json();
@@ -231,7 +255,10 @@ function StudentDashboard() {
         setChatMessages((prev) => [...prev, { text: botAnswer, sender: 'bot' }]);
         setChatInput('');
       } catch (err) {
-        setChatMessages((prev) => [...prev, { text: 'Error getting response.', sender: 'bot' }]);
+        setChatMessages((prev) => [
+          ...prev,
+          { text: err.message || 'Error getting response.', sender: 'bot' },
+        ]);
         setChatInput('');
       }
     }
@@ -251,42 +278,39 @@ function StudentDashboard() {
     }
   };
 
-  // Initialize glossary with all terms
+  // Fetch textbook link
   useEffect(() => {
-    setFilteredGlossary(glossaryTerms);
-  }, []);
-
-  // Fetch textbook links on component mount
-  useEffect(() => {
-    const fetchTextbookLinks = async () => {
+    const fetchTextbookLink = async () => {
       try {
-        const response = await fetch('/get_textbook', {
+        const response = await fetch('http://127.0.0.1:5000/get_textbook', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ course: courseNumber, uuid }),
+          body: JSON.stringify({ course: courseNumber, uuid: file_id }),
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch textbook links.');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch textbook link.');
         }
 
         const resData = await response.json();
-        // Assuming resData.links is an object like { chapter1: [url1, url2], chapter2: [...], chapter3: [...] }
-        setTextbookLinks(resData.links);
+        setTextbookLink(resData.link);
       } catch (err) {
-        // Handle error (optional)
         console.error(err);
       }
     };
 
-    fetchTextbookLinks();
-  }, [uuid, courseNumber]);
+    // If the link wasn't set from initial data, fetch it
+    if (!textbookLink) {
+      fetchTextbookLink();
+    }
+  }, [courseNumber, file_id, textbookLink]);
 
   // Handle "Take Quiz" button click
   const handleTakeQuiz = () => {
-    navigate('/quiz', { state: { uuid } });
+    navigate('/quiz', { state: { uuid: file_id } });
   };
 
   // Redirect if no data is available
@@ -310,13 +334,13 @@ function StudentDashboard() {
             <h2 className="text-xl font-semibold mb-2">PDF Viewer</h2>
             <div className="bg-gray-200 h-96 flex items-center justify-center">
               {/* Integrate a PDF viewer library here if desired */}
-              <a href={data.pdf} target="_blank" rel="noopener noreferrer">
+              <a href={data.filepath} target="_blank" rel="noopener noreferrer">
                 View PDF
               </a>
             </div>
             <div className="mt-4 flex space-x-2">
               <a
-                href={data.pdf}
+                href={data.filepath}
                 download
                 className="bg-blue-500 text-white px-4 py-2 rounded flex items-center"
               >
@@ -335,24 +359,35 @@ function StudentDashboard() {
           <div className="border rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-2">Related Videos</h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {data.videos &&
-                Object.keys(data.videos).map((videoKey) => (
-                  <div
-                    key={videoKey}
-                    className="bg-gray-200 h-40 flex flex-col items-center justify-center p-2"
-                  >
-                    <Youtube className="h-8 w-8 mb-2" />
-                    <a
-                      href={data.videos[videoKey].url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-blue-500 underline"
+              {videos && videos.length > 0 ? (
+                videos.map((videoList, idx) =>
+                  videoList.map((video, index) => (
+                    <div
+                      key={`${idx}-${index}`}
+                      className="bg-gray-200 h-40 flex flex-col items-center justify-center p-2"
                     >
-                      {data.videos[videoKey].title}
-                    </a>
-                  </div>
-                ))}
+                      <Youtube className="h-8 w-8 mb-2" />
+                      <a
+                        href={`https://www.youtube.com/watch?v=${video.videoId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-blue-500 underline text-center"
+                      >
+                        {video.title}
+                      </a>
+                    </div>
+                  ))
+                )
+              ) : (
+                <p>No related videos found.</p>
+              )}
             </div>
+          </div>
+
+          {/* Summary */}
+          <div className="border rounded-lg p-4">
+            <h2 className="text-xl font-semibold mb-2">Summary</h2>
+            <p>{summary}</p>
           </div>
         </div>
 
@@ -375,12 +410,16 @@ function StudentDashboard() {
             </div>
             <div className="h-40 overflow-y-auto">
               <ul className="space-y-2">
-                {filteredGlossary.map((item) => (
-                  <li key={item.term} className="flex justify-between">
-                    <span className="font-medium">{item.term}</span>
-                    <span className="text-gray-500">{item.definition}</span>
-                  </li>
-                ))}
+                {filteredGlossary.length > 0 ? (
+                  filteredGlossary.map((item, idx) => (
+                    <li key={idx}>
+                      <span className="font-medium">{item.term}:</span>{' '}
+                      <span className="text-gray-500">{item.definition}</span>
+                    </li>
+                  ))
+                ) : (
+                  <p>No terms found.</p>
+                )}
               </ul>
             </div>
           </div>
@@ -420,88 +459,25 @@ function StudentDashboard() {
             </form>
           </div>
 
-          {/* Relevant Textbook Pages */}
+          {/* Relevant Textbook Page */}
           <div className="border rounded-lg p-4">
-            <h2 className="text-xl font-semibold mb-2">Relevant Textbook Pages</h2>
-            <div className="mb-2">
-              <button
-                onClick={() => setActiveTab('chapter1')}
-                className={`px-2 py-1 mr-2 ${
-                  activeTab === 'chapter1' ? 'bg-gray-200' : ''
-                }`}
-              >
-                Chapter 1
-              </button>
-              <button
-                onClick={() => setActiveTab('chapter2')}
-                className={`px-2 py-1 mr-2 ${
-                  activeTab === 'chapter2' ? 'bg-gray-200' : ''
-                }`}
-              >
-                Chapter 2
-              </button>
-              <button
-                onClick={() => setActiveTab('chapter3')}
-                className={`px-2 py-1 ${
-                  activeTab === 'chapter3' ? 'bg-gray-200' : ''
-                }`}
-              >
-                Chapter 3
-              </button>
-            </div>
-            <div>
-              {activeTab === 'chapter1' && (
-                <ul className="list-disc list-inside">
-                  {textbookLinks.chapter1 &&
-                    textbookLinks.chapter1.map((link, idx) => (
-                      <li key={idx}>
-                        <a
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 underline"
-                        >
-                          {link}
-                        </a>
-                      </li>
-                    ))}
-                </ul>
-              )}
-              {activeTab === 'chapter2' && (
-                <ul className="list-disc list-inside">
-                  {textbookLinks.chapter2 &&
-                    textbookLinks.chapter2.map((link, idx) => (
-                      <li key={idx}>
-                        <a
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 underline"
-                        >
-                          {link}
-                        </a>
-                      </li>
-                    ))}
-                </ul>
-              )}
-              {activeTab === 'chapter3' && (
-                <ul className="list-disc list-inside">
-                  {textbookLinks.chapter3 &&
-                    textbookLinks.chapter3.map((link, idx) => (
-                      <li key={idx}>
-                        <a
-                          href={link}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-blue-500 underline"
-                        >
-                          {link}
-                        </a>
-                      </li>
-                    ))}
-                </ul>
-              )}
-            </div>
+            <h2 className="text-xl font-semibold mb-2">Relevant Textbook Page</h2>
+            {textbookLink ? (
+              <ul className="list-disc list-inside">
+                <li>
+                  <a
+                    href={textbookLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-blue-500 underline"
+                  >
+                    {textbookLink}
+                  </a>
+                </li>
+              </ul>
+            ) : (
+              <p>No textbook link available.</p>
+            )}
           </div>
         </div>
       </div>
@@ -525,7 +501,7 @@ function QuizPage() {
   useEffect(() => {
     const fetchQuizzes = async () => {
       try {
-        const response = await fetch('/get_quizzes', {
+        const response = await fetch('http://127.0.0.1:5000/get_quizzes', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -534,7 +510,8 @@ function QuizPage() {
         });
 
         if (!response.ok) {
-          throw new Error('Failed to fetch quizzes.');
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to fetch quizzes.');
         }
 
         const data = await response.json();
@@ -562,17 +539,13 @@ function QuizPage() {
 
     let calculatedScore = 0;
     const multipleChoice = quizzes.multiple_choice;
-    const freeResponse = quizzes.free_response;
 
     // Check multiple choice answers
     for (const qKey in multipleChoice) {
-      if (selectedAnswers[qKey] === multipleChoice[qKey].correct) {
+      if (selectedAnswers[qKey] === multipleChoice[qKey].correct_answer) {
         calculatedScore += 1;
       }
     }
-
-    // For free response questions, grading would typically be manual or handled by the backend
-    // Here, we'll only count multiple choice questions
 
     setScore(calculatedScore);
   };
@@ -613,7 +586,9 @@ function QuizPage() {
     return (
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Quiz Completed!</h1>
-        <p>Your Score: {score} / {Object.keys(quizzes.multiple_choice).length}</p>
+        <p>
+          Your Score: {score} / {Object.keys(quizzes.multiple_choice).length}
+        </p>
         <button
           onClick={() => navigate('/')}
           className="mt-4 bg-blue-500 text-white px-4 py-2 rounded"
@@ -632,11 +607,14 @@ function QuizPage() {
         <div>
           <h2 className="text-xl font-semibold mb-2">Multiple Choice Questions</h2>
           {Object.keys(quizzes.multiple_choice).map((qKey, index) => {
-            const question = quizzes.multiple_choice[qKey].question;
-            const answers = quizzes.multiple_choice[qKey].answers;
+            const questionData = quizzes.multiple_choice[qKey];
+            const question = questionData.question;
+            const answers = questionData.answers;
             return (
               <div key={qKey} className="mb-4">
-                <p className="font-medium">{index + 1}. {question}</p>
+                <p className="font-medium">
+                  {index + 1}. {question}
+                </p>
                 <div className="ml-4">
                   {answers.map((ans, idx) => (
                     <label key={idx} className="block">
@@ -664,7 +642,9 @@ function QuizPage() {
             const question = quizzes.free_response[qKey].question;
             return (
               <div key={qKey} className="mb-4">
-                <p className="font-medium">{index + 1}. {question}</p>
+                <p className="font-medium">
+                  {index + 1}. {question}
+                </p>
                 <textarea
                   className="border p-2 w-full"
                   rows="4"
@@ -683,4 +663,3 @@ function QuizPage() {
     </div>
   );
 }
-
