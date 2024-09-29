@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, Flask, request, jsonify, send_from_directory, current_app
+from flask import Blueprint, render_template, Flask, request, jsonify, send_from_directory, current_app, send_file
 from gemini import *
 import uuid
 import os
@@ -36,9 +36,13 @@ async def background_process(course, file_id):
     processing_results[file_id] = await start_processing(course, file_id)
     processing_status[file_id] = "done"
 
-@app.route('/')
-def home():
-    return 'hello aaron'
+@app.route('/cdn/pdf/<filename>')
+def gpdf(filename):
+    pdf_path = f"static/pdf/{filename}"
+    try:
+        return send_file(pdf_path, mimetype='application/pdf')
+    except FileNotFoundError:
+        return "File not found", 404
 
 @app.route('/get_pdf', methods=['POST'])
 async def get_pdf():

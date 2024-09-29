@@ -24,7 +24,7 @@ genai.configure(api_key=GEMINI_API)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
 def get_youtube_queries(genai_file) -> str:
-    YT_PROMPT = """Provide three youtube search queries that effectively recaps the content of this latex document.
+    YT_PROMPT = """Provide four youtube search queries that effectively recaps the content of this latex document.
     Provide each search query separated by newline characters. Do not include any other text in your response.
     Focus on section titles, key terms, and methods.
     Stick to one topic per youtube query.
@@ -305,17 +305,17 @@ async def start_processing(course, file_id):
     link = get_page_link(course, genai_file)
 
     return {
-        "filepath": f"{PDF_FOLDER}/{file_id}.pdf",
+        "filepath": f"{file_id}.pdf",
         "glossary": glossary,
         "summary": summary,
-        "link": link
+        "link": link,
+        "videos": vids
     }
 
 def quiz_processing(file_id):
     latex_fp = f"{PDF_FOLDER}/{file_id}.txt"
     genai_file = upload_latex(latex_fp)
     return make_quiz(genai_file)
-
 
 
 if __name__ == "__main__":

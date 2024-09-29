@@ -151,7 +151,7 @@ function LoadingPage() {
           setStatus('done');
           clearInterval(interval);
           // Navigate to Student Dashboard with received data
-          navigate('/dashboard', { state: { data: result.results, file_id, courseNumber } });
+          navigate('/dashboard', { state: { data: result.result, file_id, courseNumber } });
         } else {
           setStatus(result.status);
         }
@@ -209,17 +209,14 @@ function StudentDashboard() {
       setSummary(summaryText);
       setVideos(videoData || []);
 
-      // Parse glossary JSON
-      try {
-        const glossaryObj = JSON.parse(glossary);
-        const terms = Object.keys(glossaryObj).map((key) => ({
+      // Parse glossary object
+      if (glossary) {
+        const terms = Object.keys(glossary).map((key) => ({
           term: key,
-          definition: glossaryObj[key],
+          definition: glossary[key],
         }));
         setGlossaryTerms(terms);
         setFilteredGlossary(terms);
-      } catch (err) {
-        console.error('Failed to parse glossary:', err);
       }
 
       // Set PDF URL (if needed elsewhere)
@@ -240,16 +237,15 @@ function StudentDashboard() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({ question: chatInput, uuid: file_id }),
+          body: JSON.stringify({ message: chatInput, uuid: file_id }),
         });
 
         if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to get response.');
+          const errorData = await response.text();
+          throw new Error(errorData || 'Failed to get response.');
         }
 
-        const resData = await response.json();
-        const botAnswer = resData.answer;
+        const botAnswer = await response.text();
 
         // Add bot response
         setChatMessages((prev) => [...prev, { text: botAnswer, sender: 'bot' }]);
@@ -278,36 +274,6 @@ function StudentDashboard() {
     }
   };
 
-  // Fetch textbook link
-  useEffect(() => {
-    const fetchTextbookLink = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/get_textbook', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ course: courseNumber, uuid: file_id }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch textbook link.');
-        }
-
-        const resData = await response.json();
-        setTextbookLink(resData.link);
-      } catch (err) {
-        console.error(err);
-      }
-    };
-
-    // If the link wasn't set from initial data, fetch it
-    if (!textbookLink) {
-      fetchTextbookLink();
-    }
-  }, [courseNumber, file_id, textbookLink]);
-
   // Handle "Take Quiz" button click
   const handleTakeQuiz = () => {
     navigate('/quiz', { state: { uuid: file_id } });
@@ -322,6 +288,8 @@ function StudentDashboard() {
     );
   }
 
+  const pdfURL = "http://127.0.0.1:5000/cdn/pdf/" + data.filepath + "#zoom=90";
+
   return (
     <div className="container mx-auto p-4">
       <h1 className="text-2xl font-bold mb-6">Student Learning Dashboard</h1>
@@ -332,15 +300,18 @@ function StudentDashboard() {
           {/* PDF Viewer */}
           <div className="border rounded-lg p-4">
             <h2 className="text-xl font-semibold mb-2">PDF Viewer</h2>
-            <div className="bg-gray-200 h-96 flex items-center justify-center">
+            <div className="bg-gray-200 h-[583px] flex items-center justify-center">
               {/* Integrate a PDF viewer library here if desired */}
-              <a href={data.filepath} target="_blank" rel="noopener noreferrer">
-                View PDF
-              </a>
+              <iframe
+                src={pdfURL}
+                width="100%"
+                height="100%"
+                frameBorder="0"
+                ></iframe>
             </div>
             <div className="mt-4 flex space-x-2">
               <a
-                href={data.filepath}
+                href={pdfURL}
                 download
                 className="bg-blue-500 text-white px-4 py-2 rounded flex items-center"
               >
@@ -366,15 +337,13 @@ function StudentDashboard() {
                       key={`${idx}-${index}`}
                       className="bg-gray-200 h-40 flex flex-col items-center justify-center p-2"
                     >
-                      <Youtube className="h-8 w-8 mb-2" />
-                      <a
-                        href={`https://www.youtube.com/watch?v=${video.videoId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-blue-500 underline text-center"
-                      >
-                        {video.title}
-                      </a>
+                    <iframe
+                        width="100%"
+                        height="200"
+                        src={`https://www.youtube.com/embed/${video.videoId}`}
+                        frameBorder="0"
+                        allowFullScreen>
+                    </iframe>
                     </div>
                   ))
                 )
@@ -538,11 +507,11 @@ function QuizPage() {
     if (!quizzes) return;
 
     let calculatedScore = 0;
-    const multipleChoice = quizzes.multiple_choice;
 
     // Check multiple choice answers
-    for (const qKey in multipleChoice) {
-      if (selectedAnswers[qKey] === multipleChoice[qKey].correct_answer) {
+    for (const qKey in quizzes) {
+      const questionData = quizzes[qKey];
+      if (selectedAnswers[qKey] === questionData.correct_answer) {
         calculatedScore += 1;
       }
     }
@@ -587,7 +556,7 @@ function QuizPage() {
       <div className="container mx-auto p-4">
         <h1 className="text-2xl font-bold mb-4">Quiz Completed!</h1>
         <p>
-          Your Score: {score} / {Object.keys(quizzes.multiple_choice).length}
+          Your Score: {score} / {Object.keys(quizzes).length}
         </p>
         <button
           onClick={() => navigate('/')}
@@ -606,10 +575,14 @@ function QuizPage() {
         {/* Multiple Choice Questions */}
         <div>
           <h2 className="text-xl font-semibold mb-2">Multiple Choice Questions</h2>
-          {Object.keys(quizzes.multiple_choice).map((qKey, index) => {
-            const questionData = quizzes.multiple_choice[qKey];
+          {Object.keys(quizzes).map((qKey, index) => {
+            const questionData = quizzes[qKey];
             const question = questionData.question;
-            const answers = questionData.answers;
+            const answers = [
+              ...questionData.wrong_answers,
+              questionData.correct_answer,
+            ].sort();
+
             return (
               <div key={qKey} className="mb-4">
                 <p className="font-medium">
@@ -630,26 +603,6 @@ function QuizPage() {
                     </label>
                   ))}
                 </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Free Response Questions */}
-        <div>
-          <h2 className="text-xl font-semibold mb-2">Free Response Questions</h2>
-          {Object.keys(quizzes.free_response).map((qKey, index) => {
-            const question = quizzes.free_response[qKey].question;
-            return (
-              <div key={qKey} className="mb-4">
-                <p className="font-medium">
-                  {index + 1}. {question}
-                </p>
-                <textarea
-                  className="border p-2 w-full"
-                  rows="4"
-                  placeholder="Your answer..."
-                ></textarea>
               </div>
             );
           })}
