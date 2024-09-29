@@ -60,7 +60,7 @@ function InitialPage() {
     <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full">
         <h1 className="text-3xl font-bold mb-6 text-center text-indigo-700">
-          Student Learning Platform
+          missedmylecture 😔
         </h1>
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* File Upload */}
@@ -171,8 +171,6 @@ function LoadingPage() {
           {
             method: 'POST',
             body: formData,
-            credentials: 'include',
-
           }
         );
 
@@ -352,17 +350,19 @@ function StudentDashboard() {
 
   // Handle "Take Quiz" button click
   const handleTakeQuiz = () => {
-    navigate('/quiz', { state: { uuid: file_id } });
+    navigate('/quiz', { state: { uuid: file_id, data, file_id, courseNumber } });
   };
 
   // Redirect if no data is available
   if (!data) {
     return (
       <div className="container mx-auto p-4">
-        <p>No data available. Please go back and upload a file.</p>
+        <p>No data. Please go back and upload a file.</p>
       </div>
     );
   }
+
+  const title = "Missed my " + courseNumber + " Lecture..."
 
   const pdfURL =
     'http://127.0.0.1:5000/cdn/pdf/' + data.filepath + '#zoom=90';
@@ -370,7 +370,7 @@ function StudentDashboard() {
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <h1 className="text-3xl font-bold mb-6 text-indigo-700 text-center">
-        Student Learning Dashboard
+        {title}
       </h1>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -565,178 +565,235 @@ function StudentDashboard() {
 // ======================== Quiz Page ========================
 
 function QuizPage() {
-  const location = useLocation();
-  const { uuid } = location.state || {};
-  const navigate = useNavigate();
-
-  const [quizzes, setQuizzes] = useState(null);
-  const [error, setError] = useState('');
-  const [selectedAnswers, setSelectedAnswers] = useState({});
-  const [score, setScore] = useState(null);
-
-  // Fetch quizzes on component mount
-  useEffect(() => {
-    const fetchQuizzes = async () => {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/get_quizzes', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ uuid }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to fetch quizzes.');
+    const location = useLocation();
+    const { uuid, data, file_id, courseNumber } = location.state || {};
+    const navigate = useNavigate();
+  
+    const [quizzes, setQuizzes] = useState(null);
+    const [error, setError] = useState('');
+    const [selectedAnswers, setSelectedAnswers] = useState({});
+    const [score, setScore] = useState(null);
+    const [showResults, setShowResults] = useState(false);
+  
+    // Fetch quizzes on component mount
+    useEffect(() => {
+      const fetchQuizzes = async () => {
+        try {
+          const response = await fetch('http://127.0.0.1:5000/get_quizzes', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ uuid }),
+          });
+  
+          if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || 'Failed to fetch quizzes.');
+          }
+  
+          const data = await response.json();
+          setQuizzes(data);
+        } catch (err) {
+          setError(err.message || 'Something went wrong.');
         }
-
-        const data = await response.json();
-        setQuizzes(data);
-      } catch (err) {
-        setError(err.message || 'Something went wrong.');
-      }
+      };
+  
+      fetchQuizzes();
+    }, [uuid]);
+  
+    // Handle multiple choice answer selection
+    const handleMultipleChoiceChange = (qKey, answer) => {
+      setSelectedAnswers((prev) => ({
+        ...prev,
+        [qKey]: answer,
+      }));
     };
-
-    fetchQuizzes();
-  }, [uuid]);
-
-  // Handle multiple choice answer selection
-  const handleMultipleChoiceChange = (qKey, answer) => {
-    setSelectedAnswers((prev) => ({
-      ...prev,
-      [qKey]: answer,
-    }));
-  };
-
-  // Handle quiz submission
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!quizzes) return;
-
-    let calculatedScore = 0;
-
-    // Check multiple choice answers
-    for (const qKey in quizzes) {
-      const questionData = quizzes[qKey];
-      if (selectedAnswers[qKey] === questionData.correct_answer) {
-        calculatedScore += 1;
+  
+    // Handle quiz submission
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      if (!quizzes) return;
+  
+      let calculatedScore = 0;
+  
+      // Check multiple choice answers
+      for (const qKey in quizzes) {
+        const questionData = quizzes[qKey];
+        if (selectedAnswers[qKey] === questionData.correct_answer) {
+          calculatedScore += 1;
+        }
       }
+  
+      setScore(calculatedScore);
+      setShowResults(true); // Set flag to show results
+    };
+  
+    // Redirect if no uuid is provided
+    if (!uuid) {
+      return (
+        <div className="container mx-auto p-4">
+          <p>No quiz data available. Please go back and complete the process.</p>
+        </div>
+      );
     }
-
-    setScore(calculatedScore);
-  };
-
-  // Redirect if no uuid is provided
-  if (!uuid) {
-    return (
-      <div className="container mx-auto p-4">
-        <p>No quiz data available. Please go back and complete the process.</p>
-      </div>
-    );
-  }
-
-  // Display error message if any
-  if (error) {
-    return (
-      <div className="container mx-auto p-4">
-        <p className="text-red-500">{error}</p>
-      </div>
-    );
-  }
-
-  // Display loading indicator while fetching quizzes
-  if (!quizzes) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex flex-col items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-xl p-8 max-w-lg w-full text-center">
-          <h1 className="text-2xl font-bold mb-4 text-indigo-700">
-            Loading Quizzes...
-          </h1>
-          <div className="flex flex-col items-center space-y-4">
-            <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
-            <span className="text-lg font-medium text-gray-700">
-              Please wait a moment.
-            </span>
+  
+    // Display error message if any
+    if (error) {
+      return (
+        <div className="container mx-auto p-4">
+          <p className="text-red-500">{error}</p>
+        </div>
+      );
+    }
+  
+    // Display loading indicator while fetching quizzes
+    if (!quizzes) {
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-blue-100 to-indigo-100 flex flex-col items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl p-8 max-w-lg w-full text-center">
+            <h1 className="text-2xl font-bold mb-4 text-indigo-700">
+              Loading Quizzes...
+            </h1>
+            <div className="flex flex-col items-center space-y-4">
+              <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-indigo-600"></div>
+              <span className="text-lg font-medium text-gray-700">
+                Please wait a moment.
+              </span>
+            </div>
           </div>
         </div>
-      </div>
-    );
-  }
-
-  // Display score after submission
-  if (score !== null) {
+      );
+    }
+  
     return (
-      <div className="min-h-screen bg-gray-50 flex flex-col items-center justify-center p-4">
-        <div className="bg-white rounded-lg shadow-xl p-8 max-w-md w-full text-center">
-          <h1 className="text-2xl font-bold mb-4 text-indigo-700">
-            Quiz Completed!
-          </h1>
-          <p className="text-lg text-gray-700 mb-6">
-            Your Score: {score} / {Object.keys(quizzes).length}
-          </p>
-          <button
-            onClick={() => navigate('/dashboard')}
-            className="w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-          >
-            Go Home
-          </button>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gray-50 p-4">
-      <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
-        <h1 className="text-3xl font-bold mb-6 text-indigo-700 text-center">
-          Quiz
-        </h1>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Multiple Choice Questions */}
-          <div>
-            {Object.keys(quizzes).map((qKey, index) => {
-              const questionData = quizzes[qKey];
-              const question = questionData.question;
-              const answers = [
-                ...questionData.wrong_answers,
-                questionData.correct_answer,
-              ].sort();
-
-              return (
-                <div key={qKey} className="mb-6">
-                  <p className="font-medium text-lg text-gray-800 mb-2">
-                    {index + 1}. {question}
-                  </p>
-                  <div className="ml-4 space-y-2">
-                    {answers.map((ans, idx) => (
-                      <label key={idx} className="block">
-                        <input
-                          type="radio"
-                          name={qKey}
-                          value={ans}
-                          checked={selectedAnswers[qKey] === ans}
-                          onChange={() => handleMultipleChoiceChange(qKey, ans)}
-                          className="mr-2"
-                        />
-                        {ans}
-                      </label>
-                    ))}
-                  </div>
+      <div className="min-h-screen bg-gray-50 p-4">
+        <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow">
+          {showResults ? (
+            <>
+              <h1 className="text-3xl font-bold mb-6 text-indigo-700 text-center">
+                Quiz Results
+              </h1>
+              <p className="text-lg text-gray-700 mb-6 text-center">
+                Your Score: {score} / {Object.keys(quizzes).length}
+              </p>
+              <div>
+                {Object.keys(quizzes).map((qKey, index) => {
+                  const questionData = quizzes[qKey];
+                  const question = questionData.question;
+                  const correctAnswer = questionData.correct_answer;
+                  const answers = [
+                    ...questionData.wrong_answers,
+                    correctAnswer,
+                  ].sort();
+  
+                  return (
+                    <div key={qKey} className="mb-6">
+                      <p className="font-medium text-lg text-gray-800 mb-2">
+                        {index + 1}. {question}
+                      </p>
+                      <div className="ml-4 space-y-2">
+                        {answers.map((ans, idx) => {
+                          const isSelected = selectedAnswers[qKey] === ans;
+                          const isCorrect = ans === correctAnswer;
+                          const isUserCorrect =
+                            isSelected && isCorrect;
+                          const isUserWrong =
+                            isSelected && !isCorrect;
+  
+                          return (
+                            <div
+                              key={idx}
+                              className={`p-2 rounded ${
+                                isUserCorrect
+                                  ? 'bg-green-100 border border-green-500'
+                                  : isUserWrong
+                                  ? 'bg-red-100 border border-red-500'
+                                  : isCorrect
+                                  ? 'bg-green-100 border border-green-500'
+                                  : 'bg-gray-100'
+                              }`}
+                            >
+                              <label className="flex items-center">
+                                <input
+                                  type="radio"
+                                  name={qKey}
+                                  value={ans}
+                                  checked={isSelected}
+                                  disabled
+                                  className="mr-2"
+                                />
+                                {ans}
+                              </label>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+              <button
+                onClick={() => navigate('/dashboard', {state:{data, file_id, courseNumber}})}
+                className="w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 mt-4"
+              >
+                Back to Dashboard
+              </button>
+            </>
+          ) : (
+            <>
+              <h1 className="text-3xl font-bold mb-6 text-indigo-700 text-center">
+                Quiz
+              </h1>
+              <form onSubmit={handleSubmit} className="space-y-6">
+                {/* Multiple Choice Questions */}
+                <div>
+                  {Object.keys(quizzes).map((qKey, index) => {
+                    const questionData = quizzes[qKey];
+                    const question = questionData.question;
+                    const answers = [
+                      ...questionData.wrong_answers,
+                      questionData.correct_answer,
+                    ].sort();
+  
+                    return (
+                      <div key={qKey} className="mb-6">
+                        <p className="font-medium text-lg text-gray-800 mb-2">
+                          {index + 1}. {question}
+                        </p>
+                        <div className="ml-4 space-y-2">
+                          {answers.map((ans, idx) => (
+                            <label key={idx} className="flex items-center">
+                              <input
+                                type="radio"
+                                name={qKey}
+                                value={ans}
+                                checked={selectedAnswers[qKey] === ans}
+                                onChange={() =>
+                                  handleMultipleChoiceChange(qKey, ans)
+                                }
+                                className="mr-2"
+                              />
+                              {ans}
+                            </label>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
-              );
-            })}
-          </div>
-
-          {/* Submit Button */}
-          <button
-            type="submit"
-            className="w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
-          >
-            Submit Quiz
-          </button>
-        </form>
+  
+                {/* Submit Button */}
+                <button
+                  type="submit"
+                  className="w-full bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700"
+                >
+                  Submit Quiz
+                </button>
+              </form>
+            </>
+          )}
+        </div>
       </div>
-    </div>
-  );
-}
+    );
+  }

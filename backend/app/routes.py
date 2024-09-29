@@ -9,7 +9,7 @@ DATABASE = dict()
 DATABASE_textbook = dict()
 
 app = Flask(__name__)
-CORS(app, supports_credentials=True)
+CORS(app)
 
 # Assume DATABASE_textbook is a pre-existing dictionary
 # DATABASE_textbook = {
@@ -63,7 +63,9 @@ async def get_pdf():
     processing_status[file_id] = 'Processing'
     asyncio.create_task(background_process(course, file_id))
     print(file_id + " processing.")
-    return jsonify({'file_id': file_id}), 200
+    response = jsonify({'file_id': file_id})
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response, 200
     # file = request.files['file']
     # uuid = str(uuid.uuid4())
     # return gemini.get_pdf(DATABASE[uuid]['latex'])

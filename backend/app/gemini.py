@@ -15,7 +15,7 @@ from flask import jsonify
 #         "url"    : "https://msashigri.wordpress.com/wp-content/uploads/2016/11/methods-of-mathemacial-for-physicists.pdf"
 #     }
 # }
-from database import DATABASE_textbook
+from data.database import *
 
 UPLOAD_FOLDER = "app/static/uploads"
 PDF_FOLDER = "app/static/pdf"
