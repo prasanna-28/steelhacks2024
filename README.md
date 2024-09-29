@@ -35,7 +35,7 @@ The Student Learning Platform revolutionizes the way students engage with their 
 - [Tailwind CSS](https://tailwindcss.com/) - Utility-first CSS framework
 - [Google Generative AI](https://ai.google/) - Powers AI functionalities
 - [YouTube Data API](https://developers.google.com/youtube/v3) - Retrieves relevant video content
-- [PittAPI](https://pypi.org/project/pittapi/) - University of Pittsburgh's API for course data
+- [PittAPI](https://pypi.org/project/pittapi/) - University of Pittsburgh's API
 
 ## Getting Started
 
