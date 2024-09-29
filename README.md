@@ -1,6 +1,4 @@
-# Student Learning Platform
-
-A web application that transforms handwritten lecture notes into an interactive and comprehensive learning experience.
+# Name
 
 ## Table of Contents
 
@@ -15,7 +13,7 @@ A web application that transforms handwritten lecture notes into an interactive 
 
 ## About the Project
 
-The Student Learning Platform revolutionizes the way students engage with their study materials. By simply uploading your handwritten notes and specifying your course, the platform provides a suite of tools to enhance your learning journey:
+<Name> revolutionizes the way students engage with their study materials. By simply uploading your handwritten notes and specifying your course, the platform provides a suite of tools to enhance your learning journey:
 
 1. **Elegant Notes Conversion**: Transforms your handwritten notes into a clean, professionally typeset PDF using LaTeX.
 
