@@ -89,7 +89,8 @@ def notes_to_latex(file_id: str) -> str:
     Don't indent the first line of each paragraph.
     Reduce margins.
     Don't include any graphics or images in your response.
-    Make sure to include all the necessary packages (amsmath, amsfonts). 
+    Make sure to include all the necessary packages (amsmath, amsfonts).
+    Use only plain text characters, no unicode characters.
     Return just the latex code, nothing else.
     """
 
@@ -127,7 +128,7 @@ def make_glossary(file_id):
 
 def make_summary(file_id):
     SUMMARY_PROMPT = r"""
-    Make a summary of the content and key ideas in the latex file.
+    Make a summary of the content and key ideas in the latex file in 2-3 sentences.
     Return your summary in plain text (without any markdown elements).
 
     EXAMPLE: "\begin{document} The function $f$ maps $x \in \mathbb{R}$ to $\sqrt{x}$. \end{document}" -> "f maps x to the square root of x."
@@ -318,9 +319,7 @@ async def start_processing(course, file_id):
     }
 
 def quiz_processing(file_id):
-    latex_fp = f"{PDF_FOLDER}/{file_id}.txt"
-    genai_file = upload_latex(latex_fp)
-    return make_quiz(genai_file)
+    return make_quiz(file_id)
 
 
 if __name__ == "__main__":

@@ -9,7 +9,7 @@ DATABASE = dict()
 DATABASE_textbook = dict()
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, supports_credentials=True)
 
 # Assume DATABASE_textbook is a pre-existing dictionary
 # DATABASE_textbook = {
@@ -78,7 +78,7 @@ def download_file(filename):
 def get_quiz():
     # uuid = request.args['uuid']
     uuid = request.get_json()['uuid']
-    return quiz_processing(DATABASE[uuid]['latex'])
+    return quiz_processing(uuid)
 
 
 @app.route('/get_response', methods=['POST'])

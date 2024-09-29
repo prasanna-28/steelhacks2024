@@ -1,0 +1,67 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amsfonts}
+
+\title{Lecture Notes on Sets and Maps}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Sets}
+
+\begin{align*}
+\mathbb{N} &= \{0, 1, 2, ...\} \text{ - *natural numbers*} \\
+\mathbb{Z} &= \{-2, -1, 0, 1, 2, ...\} \text{ - *integers*} \\
+\mathbb{Q} &= \{ \frac{k}{n} | k, n \in \mathbb{N}, n \neq 0\} \text{ - *rationals*} \\
+\mathbb{R} &= \text{*real numbers*} \\
+\mathbb{C} &= \{a + ib | a, b \in \mathbb{R}\} \text{ - *complex numbers*} \\
+&\text{ (}i \text{ = *imaginary unit*, } i^2 = -1 \text{)} \\
+\mathbb{R}^d &= \{(a_1, ..., a_d) | a_i \in \mathbb{R}\} \text{ - *d-dimensional space*} \\
+\mathbb{R}^\infty &= \{(a_0, a_1, a_2, ...) | a_i \in \mathbb{R}\} \text{ - *space of infinite sequences of reals*}
+\end{align*}
+
+\section{Set Operations}
+
+\begin{align*}
+A \cup B &= \{c | c \in A \text{ or } c \in B\} \text{ - *union*} \\
+A \cap B &= \{c | c \in A \text{ and } c \in B\} \text{ - *intersection*} \\
+A \setminus B &= \{c \in A | c \notin B\} \text{ - *difference*} \\
+A \Delta B &= (A \cup B) \setminus (A \cap B) \text{ - *symmetric difference*}
+\end{align*}
+
+\section{Indexed Family of Sets}
+
+Let $(A_\alpha)_{\alpha \in I}$ be an *indexed family of sets* (*index set* I).
+
+* **Example 1:** I = N, $A_\alpha := \{\alpha, \alpha + 1\}$
+* **Example 2:** I = R<sup>+</sup> = {x ∈ R | x > 0}, $A_\alpha := [\alpha, \infty)$
+
+\begin{align*}
+\bigcup_{\alpha \in I} A_\alpha &= \{a | a \in A_\alpha \text{ for some } \alpha \in I\} \\
+&= \{a | \exists \alpha \in I \text{ such that } a \in A_\alpha\} \\
+\bigcap_{\alpha \in I} A_\alpha &= \{a | a \in A_\alpha \text{ for every } \alpha \in I\} \\
+&= \{a | \forall \alpha \in I, a \in A_\alpha\}.
+\end{align*}
+
+\section{Maps}
+
+A *map* (or *function*, *mapping*, *transformation*) from a set A to a set B is an assignment that assigns a unique element of B to each element of A.
+
+* **Notation:** f: A → B, f(a) = b (b is the *value* of f at a)
+* **Domain:** A
+* **Target Space:** B
+
+* **Restriction:** If A' ⊆ A, then f': A' → B, f'(a) = f(a) is the *restriction* of f to A' (denoted by f' = f|<sub>A'</sub>)
+
+\section{Examples}
+
+* **Example 1:** f: R → R, f(x) = sin(x)
+* **Example 2:** f: R\{0} → R, f(x) = 1/x
+* **Example 3:** g: R → R, g(x) = {1/x if x ≠ 0, 0 if x = 0}
+* **Example 4:** f: V → set of subspaces of V, f(v) = span(v)
+* **Example 5:** D: P(R) → P(R), D(p(x)) = p'(x) - *derivative*
+
+\end{document}

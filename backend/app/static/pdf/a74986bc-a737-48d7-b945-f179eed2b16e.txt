@@ -1,0 +1,93 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amsfonts}
+
+\begin{document}
+
+\section*{Sets}
+
+\subsection*{Standard Sets of Numbers}
+
+\begin{itemize}
+\item \textit{Natural Numbers} ($\mathbb{N}$):  $\mathbb{N} = \{0, 1, 2, ...\}$
+\item \textit{Integers} ($\mathbb{Z}$): $\mathbb{Z} = \{..., -2, -1, 0, 1, 2, ...\}$
+\item \textit{Rational Numbers} ($\mathbb{Q}$):  $\mathbb{Q} = \{\frac{k}{n} \mid k, n \in \mathbb{N}, n \neq 0\}$ 
+\item \textit{Real Numbers} ($\mathbb{R}$): All numbers on the number line.
+\item \textit{Complex Numbers} ($\mathbb{C}$): $\mathbb{C} = \{a + ib \mid a, b \in \mathbb{R}\}$, where $i$ is the \textit{imaginary unit} ($i^2 = -1$).
+\end{itemize}
+
+\subsection*{Euclidean and Sequence Spaces}
+
+\begin{itemize}
+\item \textit{Euclidean Space} ($\mathbb{R}^d$):  The set of all $d$-tuples of real numbers. 
+\item \textit{Sequence Space} ($\mathbb{R}^\infty$): The set of all infinite sequences of real numbers.
+\end{itemize}
+
+
+\section*{Set Operations}
+
+Let $A$ and $B$ be sets.
+
+\begin{itemize}
+\item \textit{Union}: 
+ $$A \cup B = \{c \mid c \in A \text{ or } c \in B\}$$
+\item \textit{Intersection}:
+ $$A \cap B = \{c \mid c \in A \text{ and } c \in B\}$$ 
+\item \textit{Difference}: 
+$$A - B = \{c \in A \mid c \notin B\}$$ 
+\item \textit{Symmetric Difference}: 
+$$A \Delta B = (A \cup B) - (A \cap B)$$
+\end{itemize}
+
+\section*{Indexed Families of Sets}
+
+An \textit{indexed family} of sets is a collection of sets $(A_\alpha)_{\alpha \in I}$, where $I$ is an \textit{index set}.
+
+\textbf{Examples:}
+\begin{enumerate}
+\item $I = \mathbb{N}$, $A_\alpha = \{\alpha, \alpha + 1\}$
+\item $I = \mathbb{R}^+ = \{x \in \mathbb{R} \mid x > 0\}$, $A_\alpha = [\alpha, \infty)$ 
+\end{enumerate}
+
+\textbf{Union and Intersection of Indexed Families}
+
+\begin{itemize}
+\item \textit{Union}:  
+$$\bigcup_{\alpha \in I} A_\alpha = \{a \mid a \in A_\alpha \text{ for some } \alpha \in I\}$$
+\item \textit{Intersection}:  
+$$\bigcap_{\alpha \in I} A_\alpha = \{a \mid a \in A_\alpha \text{ for every } \alpha \in I\}$$
+\end{itemize}
+
+\section*{Maps (Functions)}
+
+A \textit{map} (or \textit{function}) $f$ from a set $A$ to a set $B$, denoted $f: A \rightarrow B$, is an assignment that associates to each element $a \in A$ a unique element $f(a) \in B$.
+
+\textbf{Terminology:}
+
+\begin{itemize}
+\item \textit{Domain}: The set $A$.
+\item \textit{Target Space (Codomain)}: The set $B$.
+\item \textit{Value of f at a}: The element $f(a) \in B$. 
+\end{itemize}
+
+\textbf{Restriction of a Function}
+
+Let $f: A \rightarrow B$ be a function and $A' \subseteq A$. The \textit{restriction} of $f$ to $A'$, denoted $f|_{A'}: A' \rightarrow B$, is defined by $f|_{A'}(a) = f(a)$ for all $a \in A'$. 
+
+\textbf{Examples:}
+
+\begin{enumerate} 
+\item $f: \mathbb{R} \rightarrow \mathbb{R}$, $f(x) = \sin(x)$
+\item $f: \mathbb{R}_{\geq 0} \rightarrow \mathbb{R}$, $f(x) = \sqrt{x}$ 
+\item $g: \mathbb{R} \rightarrow \mathbb{R}$,
+ \[ g(x) = 
+  \begin{cases} 
+   x & \text{if } x \neq 0 \\
+   1  & \text{if } x = 0 
+  \end{cases}
+\]
+\item $f: V \rightarrow \{\text{subspaces of } V\}$, where $V$ is a vector space, $f(v) = \text{span}(v)$ 
+\item $D: P(\mathbb{R}) \rightarrow P(\mathbb{R})$, where $P(\mathbb{R})$ is the set of polynomials with real coefficients, $D(p(x)) = p'(x)$ (the derivative)
+\end{enumerate} 
+
+\end{document} 

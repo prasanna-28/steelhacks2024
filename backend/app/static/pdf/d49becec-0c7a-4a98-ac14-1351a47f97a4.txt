@@ -1,0 +1,73 @@
+\documentclass[12pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\title{Set Theory and Functions}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section{Sets}
+
+\begin{align*}
+\mathbb{N} &= \{0, 1, 2, \ldots \} \quad \text{\textit{natural numbers}} \\
+\mathbb{Z} &= \{-2, -1, 0, 1, 2, \ldots \} \quad \text{\textit{integers}} \\
+\mathbb{Q} &= \left\{ \frac{k}{n} \mid k, n \in \mathbb{N}, n \neq 0 \right\} \quad \text{\textit{rationals}} \\
+\mathbb{R} &= \quad \text{\textit{real numbers}} \\
+\mathbb{C} &= \{a + ib \mid a, b \in \mathbb{R}\} \quad \text{\textit{complex numbers}} \\
+& i = \text{\textit{imaginary unit}} \\
+& \text{characterized by } i^2 = -1 \\
+\mathbb{R}^d &= \{(a_1, ..., a_d) \mid a_i \in \mathbb{R}\} \quad \text{\textit{d-dimensional space}} \\
+\mathbb{R}^\infty &= \{(a_0, a_1, a_2, ...) \mid a_i \in \mathbb{R}\} \quad \text{\textit{space of infinite sequences of reals}}
+\end{align*}
+
+\section{Operations on Sets}
+
+- **Union:**
+    - $A \cup B = \{c \mid c \in A \text{ or } c \in B\}$
+- **Intersection:**
+    - $A \cap B = \{c \mid c \in A \text{ and } c \in B\}$
+- **Difference:**
+    - $A \setminus B = \{c \mid c \in A \text{ and } c \notin B\}$
+- **Symmetric difference:**
+    - $A \Delta B = (A \cup B) \setminus (A \cap B)$
+
+\section{Indexed Families of Sets}
+
+- **Definition:**
+    - Let $(A_\alpha)_{\alpha \in I}$ be an \textit{indexed family of sets} (index set I).
+
+- **Examples:**
+    1. I = N: $A_\alpha = \{\alpha, \alpha + 1\}$
+    2. I = R<sup>+</sup> = {x ∈ R | x > 0}: $A_\alpha = [\alpha, \infty)$
+
+- **Union:** $\bigcup_{\alpha \in I} A_\alpha = \{a \mid a \in A_\alpha \text{ for some } \alpha \in I\}$
+- **Intersection:** $\bigcap_{\alpha \in I} A_\alpha = \{a \mid a \in A_\alpha \text{ for every } \alpha \in I\}$
+
+\section{Maps}
+
+- **Definition:**
+    - Let A, B be sets. A \textit{map} $f : A \to B$ is an assignment that to each $a \in A$ assigns a unique $b \in B$ called the \textit{value of f at a} and denoted by $f(a)$.
+
+- **Terminology:**
+    - A is called the \textit{domain} of f.
+    - B is called the \textit{target space} of f.
+
+- **Restriction of a Map:**
+    - If A' ⊆ A, then the map $f' : A' \to B$ defined by $f'(a) = f(a)$ for all $a \in A'$ is called the \textit{restriction of f to A'} and is denoted by $f' = f|_{A'}$.
+
+- **Examples:**
+    1. $f : \mathbb{R} \to \mathbb{R}$ defined by $f(x) = \sin(x)$.
+    2. $f : \mathbb{R} \setminus \{0\} \to \mathbb{R}$ defined by $f(x) = \frac{1}{x}$.
+    3. $g : \mathbb{R} \to \mathbb{R}$ defined by $g(x) = \begin{cases}
+    \frac{1}{x} & \text{if } x \neq 0 \\
+    0 & \text{if } x = 0
+    \end{cases}$.
+    4. $f : V \to \{\text{set of subspaces of } V\}$ defined by $f(v) = span(v)$.
+    5. $D : P(\mathbb{R}) \to P(\mathbb{R})$ defined by $D(p(x)) = p'(x)$ - the \textit{derivative}.
+
+
+\end{document}

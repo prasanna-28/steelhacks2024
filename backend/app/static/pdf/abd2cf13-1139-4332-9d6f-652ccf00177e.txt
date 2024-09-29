@@ -1,0 +1,82 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\title{Sets and Maps}
+\author{}
+\date{}
+
+\begin{document}
+\maketitle
+
+\section*{Sets}
+
+\begin{align*}
+\mathbb{N} &= \{0, 1, 2, \dots\} \qquad \text{\it natural numbers} \\
+\mathbb{Z} &= \{-2, -1, 0, 1, 2, \dots\} \qquad \text{\it integers} \\
+\mathbb{Q} &= \left\{ \frac{k}{n} \mid k, n \in \mathbb{N}, n \neq 0 \right\} \qquad \text{\it rationals} \\
+\mathbb{R} &= \qquad \text{\it real numbers} \\
+\mathbb{C} &= \{ a + ib \mid a, b \in \mathbb{R} \} \qquad \text{\it complex numbers} \\
+&\qquad \text{\it i = imaginary unit, characterized by } i^2 = -1. \\
+\mathbb{R}^d &= \{(a_1, a_2, \dots, a_d) \mid a_i \in \mathbb{R} \} \qquad \text{\it d-dimensional space} \\
+\mathbb{R}^\infty &= \{(a_0, a_1, a_2, \dots) \mid a_i \in \mathbb{R} \} \qquad \text{\it space of infinite sequences of real numbers} 
+\end{align*}
+
+\section*{Set Operations}
+
+\begin{align*}
+A \cup B &= \{c \mid c \in A \text{ or } c \in B \} \qquad \text{\it union} \\
+A \cap B &= \{c \mid c \in A \text{ and } c \in B \} \qquad \text{\it intersection} \\
+A \setminus B &= \{c \in A \mid c \notin B \} \qquad \text{\it difference} \\
+A \Delta B &= (A \cup B) \setminus (A \cap B) \qquad \text{\it symmetric difference} 
+\end{align*}
+
+\section*{Indexed Families of Sets}
+
+Let $(A_\alpha)_{\alpha \in I}$ be an \textit{indexed family} of \textit{sets} (\textit{index set} $I$).
+
+\textbf{Examples}:
+\begin{enumerate}
+\item $I = \mathbb{N}$, $A_\alpha := \{\alpha, \alpha + 1\}$ 
+\item $I = \mathbb{R}^+ = \{x \in \mathbb{R} \mid x > 0\}$, $A_\alpha := [\alpha, \infty)$
+\end{enumerate}
+
+\textbf{Union of an Indexed Family}:
+\begin{align*}
+\bigcup_{\alpha \in I} A_\alpha &= \{a \mid a \in A_\alpha \text{ for some } \alpha \in I\} \\
+&= \{a \mid \exists \alpha \in I \text{ such that } a \in A_\alpha \}
+\end{align*}
+
+\textbf{Intersection of an Indexed Family}:
+\begin{align*}
+\bigcap_{\alpha \in I} A_\alpha &= \{a \mid a \in A_\alpha \text{ for every } \alpha \in I\} \\
+&= \{a \mid \forall \alpha \in I, a \in A_\alpha \}
+\end{align*}
+
+\section*{Maps}
+
+\textit{Maps} (also known as \textit{functions} or \textit{mappings}) are assignments that associate each element in a set $A$ (\textit{domain}) to a unique element in another set $B$ (\textit{target space}).
+
+\textbf{Notation}: 
+$f: A \to B$
+
+$a \mapsto f(a)$ - indicates that element $a$ from $A$ is mapped to element $f(a)$ in $B$.
+
+\textbf{Value of a Map}:
+$f(a)$ is called the \textit{value} of the map $f$ at element $a$.
+
+\textbf{Restriction of a Map}: 
+If $A'$ is a subset of $A$, then the map $f'$ from $A'$ to $B$ defined by $f'(a) = f(a)$ is called the \textit{restriction} of $f$ to $A'$.
+
+\section*{Examples of Maps}
+
+\begin{enumerate}
+\item \textit{sin function}: $f: \mathbb{R} \to \mathbb{R}, x \mapsto \sin(x)$ 
+\item \textit{Power function}: $f: \mathbb{R}[2, 3] \to \mathbb{R}, x \mapsto x^y$
+\item \textit{Piecewise defined function}: $g: \mathbb{R} \to \mathbb{R}, x \mapsto \begin{cases} x & \text{if } x \neq 0 \\ 1 & \text{if } x = 0 \end{cases}$
+\item \textit{Span function (linear algebra)}: $f: V \to \text{set of subspaces of } V, v \mapsto span(v)$
+\item \textit{Derivative operator (calculus)}: $D: P(\mathbb{R}) \to P(\mathbb{R}), p(x) \mapsto p'(x)$
+\end{enumerate}
+
+\end{document}

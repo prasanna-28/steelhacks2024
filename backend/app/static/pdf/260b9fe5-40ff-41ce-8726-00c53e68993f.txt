@@ -1,0 +1,91 @@
+\documentclass{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amsfonts}
+
+\title{Lecture Notes on Sets and Maps}
+\author{}
+\date{}
+
+\begin{document}
+
+\maketitle
+
+\section{Sets}
+
+\subsection{Sets of Numbers}
+
+\begin{align*}
+\mathbb{N} &= \{ 0, 1, 2, ... \} \qquad \text{ *Natural numbers*} \\
+\mathbb{Z} &= \{ ..., -2, -1, 0, 1, 2, ... \} \qquad \text{ *Integers*} \\
+\mathbb{Q} &= \left\{ \frac{k}{n} \mid k, n \in \mathbb{N}, n \neq 0 \right\} \qquad \text{ *Rational numbers*} \\
+\mathbb{R} &= \qquad \text{ *Real numbers*} \\
+\mathbb{C} &= \{ a + ib \mid a, b \in \mathbb{R} \} \qquad \text{ *Complex numbers* (where *i* is the *imaginary unit*, characterized by } i^2 = -1 \text{.)}
+\end{align*}
+
+\subsection{Other Sets}
+
+\begin{align*}
+\mathbb{R}^d &= \{ (a_1, ..., a_d) \mid a_i \in \mathbb{R} \} \qquad \text{ *d-dimensional space*} \\
+\mathbb{R}^{\infty} &= \{ (a_0, a_1, a_2, ...) \mid a_i \in \mathbb{R} \} \qquad \text{ *Space of infinite sequences of reals*} 
+\end{align*}
+
+\section{Set Operations}
+
+Let A, B be sets.
+
+\begin{align*}
+A \cup B &= \{ c \mid c \in A \text{ or } c \in B \} \qquad \text{ *Union*: Elements in either A or B.} \\
+A \cap B &= \{ c \mid c \in A \text{ and } c \in B \} \qquad \text{ *Intersection*: Elements in both A and B.} \\
+A \setminus B &= \{ c \in A \mid c \notin B \} \qquad \text{ *Difference*: Elements in A but not in B.} \\
+A \Delta B &= (A \cup B) \setminus (A \cap B) \qquad \text{ *Symmetric difference*: Elements in either A or B but not both.}
+\end{align*}
+
+\section{Indexed Families of Sets}
+
+Let (A<sub>α</sub>)<sub>α∈I</sub> be an *indexed family of sets* (index set I).
+
+\subsection{Examples}
+
+1. I = IN, A<sub>α</sub> = { α, α + 1}
+2. I = R<sup>+</sup> = { x ∈ R | x > 0 }, A<sub>α</sub> = [α, ∞)
+
+\subsection{Union and Intersection of Indexed Families}
+
+\begin{align*}
+\bigcup_{\alpha \in I} A_{\alpha} &= \{ a \mid a \in A_{\alpha} \text{ for some } \alpha \in I \} \qquad \text{ *Union of all sets in the family*}. \\
+\bigcap_{\alpha \in I} A_{\alpha} &= \{ a \mid a \in A_{\alpha} \text{ for every } \alpha \in I \} \qquad \text{ *Intersection of all sets in the family*}.
+\end{align*}
+
+\section{Maps (Functions)}
+
+A *map* (or *function*) *f* is an assignment that takes an element *a* from set A and assigns to it a unique element *b* from set B. This is denoted as:
+
+*f: A → B*
+*a ↦ f(a)*
+
+* **Domain:** The set A is called the *domain* of the function.
+* **Target Space:** The set B is called the *target space* (or *codomain*) of the function.
+* **Value:** The element *f(a)* is called the *value* of the function *f* at *a*.
+
+\subsection{Restriction of a Map}
+
+If A' ⊆ A, then the map *f'* defined as follows is called the *restriction* of *f* to A':
+
+*f': A' → B*
+*a ↦ f'(a) = f(a)*
+
+This is often denoted as *f' = f|<sub>A'</sub>*.
+
+\section{Examples of Maps}
+
+1. *f: R → R, x ↦ sin(x)* - The *sine function*.
+2. *f: R<sup>+</sup> → R, x ↦ √x* - The *square root function*.
+3. *g: R → R, x ↦ 
+    {
+    x if x ≠ 0
+    0 if x = 0 
+    }* - A function that is zero at zero and equal to x otherwise.
+4. *f: V → { subspaces of V }, v ↦ span(v)* - A function that takes a vector and returns the *subspace* spanned by that vector.
+5. *D: P(R) → P(R), p(x) ↦ p'(x)* - The *derivative operator* that takes a polynomial and returns its derivative. 
+
+\end{document}

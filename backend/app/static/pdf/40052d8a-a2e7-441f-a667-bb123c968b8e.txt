@@ -1,0 +1,70 @@
+\documentclass{article}
+
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+
+\begin{document}
+
+\title{Set Theory and Maps}
+
+\author{}
+
+\maketitle
+
+\section{Sets}
+
+\subsection{Basic Sets}
+
+We will start by defining some basic sets:
+
+* **IN** = {0, 1, 2, ...}  - *Natural numbers*
+* **Z** = {-2, -1, 0, 1, 2, ...} - *Integers*
+* **Q** = {k/n | k, n ∈ IN, n ≠ 0} - *Rational numbers*
+* **R** - *Real numbers*
+* **C** = {a + ib | a, b ∈ R} - *Complex numbers* (where *i* is the *imaginary unit* characterized by *i² = -1*)
+
+\subsection{Set Operations}
+
+Let *A* and *B* be sets. We define the following operations:
+
+* **A ∪ B** = {c | c ∈ A or c ∈ B} - *Union*
+* **A ∩ B** = {c | c ∈ A and c ∈ B} - *Intersection*
+* **A \ B** = {c ∈ A | c ∉ B} - *Difference*
+* **A Δ B** = (A ∪ B) \ (A ∩ B) - *Symmetric difference*
+
+\section{Indexed Families of Sets}
+
+Let (Aα)α∈I be an *indexed family of sets* (with *index set I*).
+
+\subsection{Examples}
+
+1. I = IN, Aα = {α, α + 1}
+2. I = R+ = {x ∈ R | x > 0}, Aα = [α, ∞)
+
+\subsection{Operations on Indexed Families}
+
+* **∪α∈I Aα** = {a | a ∈ Aα for some α ∈ I} - *Union*
+* **∩α∈I Aα** = {a | a ∈ Aα for every α ∈ I} - *Intersection*
+
+\section{Maps}
+
+\subsection{Definition}
+
+Let *A* and *B* be sets. A *map* *f: A → B* is an assignment that assigns a unique *b ∈ B* to each *a ∈ A*, called the *value of f at a*, denoted by *f(a)*.
+
+\subsection{Terminology}
+
+* **Domain:** The set *A* is called the *domain* of *f*.
+* **Target Space:** The set *B* is called the *target space* of *f*.
+* **Restriction:** If *A' ⊆ A*, then the map *f': A' → B* defined by *f'(a) = f(a)* is called the *restriction* of *f* to *A'*, denoted by *f' = f|A'*.
+
+\subsection{Examples}
+
+1. *f: R → R*, *x → sin(x)*
+2. *f: R\{0} → R*, *x → 1/x*
+3. *g: R → R*, *x → {1/x if x ≠ 0, 0 if x = 0}*
+4. *f: V → {set of subspaces of V}*, *v → span(v)*
+5. *D: P(R) → P(R) *, *p(x) → p'(x)* (where *p'(x)* is the *derivative* of *p(x)*)
+
+\end{document}

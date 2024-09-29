@@ -1,0 +1,93 @@
+\documentclass[a4paper,10pt]{article}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amsfonts}
+
+\begin{document}
+
+\title{Sets and Maps}
+\maketitle
+
+\section{Sets}
+
+\subsection{Common Sets}
+
+The following are some common sets:
+
+\begin{align*}
+\mathbb{N} &= \{ 0, 1, 2, \dots \} &\text{natural numbers} \\
+\mathbb{Z} &= \{ \dots, -2, -1, 0, 1, 2, \dots \} &\text{integers} \\
+\mathbb{Q} &= \left\{ \frac{k}{n} \mid k, n \in \mathbb{N}, n \neq 0 \right\} &\text{rational numbers} \\
+\mathbb{R} &= &\text{real numbers} \\
+\mathbb{C} &= \{ a + ib \mid a, b \in \mathbb{R} \} &\text{complex numbers} \\
+&&i = \text{imaginary unit}\\
+&& \text{characterized by } i^2 = -1.
+\end{align*}
+
+\subsection{Set Operations}
+
+Given sets $A$ and $B$, we can perform the following operations:
+
+\begin{align*}
+A \cup B &= \{ c \mid c \in A \text{ or } c \in B \} &\text{\textit{union}}\\
+A \cap B &= \{ c \mid c \in A \text{ and } c \in B \} &\text{\textit{intersection}}
+\end{align*}
+
+We can also define the \textit{difference} and \textit{symmetric difference} as follows:
+
+\begin{align*}
+A \setminus B &= \{ c \in A \mid c \notin B \} \\
+A \triangle B &= A \cup B \setminus (A \cap B)
+\end{align*}
+
+\subsection{Indexed Families of Sets}
+
+Let $(A_{\alpha})_{\alpha \in I}$ be an \textit{indexed family} of sets, where $I$ is the \textit{index set}.
+
+\subsubsection{Examples}
+
+\begin{enumerate}
+\item Let $I = \mathbb{N}$ and $A_{\alpha} = \{\alpha, \alpha + 1\}$.
+\item Let $I = \mathbb{R}^+ = \{ x \in \mathbb{R} \mid x > 0 \}$ and $A_{\alpha} = [\alpha, \infty)$.
+\end{enumerate}
+
+\subsubsection{Union and Intersection}
+
+The \textit{union} and \textit{intersection} of an indexed family of sets are defined as follows:
+
+\begin{align*}
+\bigcup_{\alpha \in I} A_{\alpha} &= \{ a \mid a \in A_{\alpha} \text{ for some } \alpha \in I \} \\
+\bigcap_{\alpha \in I} A_{\alpha} &= \{ a \mid a \in A_{\alpha} \text{ for every } \alpha \in I \}
+\end{align*}
+
+\section{Maps and Functions}
+
+A \textit{map} (also known as a \textit{function}) is a rule that assigns a unique output to each input. 
+
+Let $A$ and $B$ be sets. A map $f: A \to B$ is an \textit{assignment} that assigns to each element $a \in A$ a unique element $f(a) \in B$, called the \textit{value of $f$ at $a$}.
+
+\subsection{Restriction of Maps}
+
+If $A' \subset A$, then the \textit{restriction} of $f$ to $A'$, denoted $f' = f|_{A'}$, is the map:
+
+\begin{align*}
+f': A' &\to B \\
+a &\mapsto f'(a) = f(a)
+\end{align*}
+
+\subsection{Examples}
+
+\begin{enumerate}
+\item Let $f: \mathbb{R} \to \mathbb{R}$ be defined by $f(x) = \sin(x)$.
+\item Let $f: \mathbb{R}^+ \to \mathbb{R}$ be defined by $f(x) = y^x$.
+\item Let $g: \mathbb{R} \to \mathbb{R}$ be defined by
+\begin{align*}
+g(x) &= \begin{cases}
+\frac{1}{x} & \text{ if } x \neq 0 \\
+0 & \text{ if } x = 0
+\end{cases}
+\end{align*}
+\item Let $f: V \to \text{set of subspaces of } V$ be defined by $f(v) = \text{span}(v)$, where $V$ is a vector space.
+\item Let $D: P(\mathbb{R}) \to P(\mathbb{R})$ be defined by $D(p(x)) = p'(x)$, where $P(\mathbb{R})$ is the set of polynomials with real coefficients and $p'(x)$ is the derivative of $p(x)$.
+\end{enumerate}
+
+\end{document}
