@@ -12,7 +12,6 @@ A web application that transforms handwritten lecture notes into an interactive 
 - [Usage](#usage)
 - [Features](#features)
 - [License](#license)
-- [Contact](#contact)
 
 ## About the Project
 
