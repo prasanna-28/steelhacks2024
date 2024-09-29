@@ -1,4 +1,4 @@
-# PantherNotes
+# missedmylecture
 
 ## Authors
 
@@ -17,7 +17,7 @@ Prasanna Pantha (ppantha@andrew.cmu.edu), Owen Lalis (olalis@andrew.cmu.edu), Ty
 
 ## About the Project
 
-PantherNotes revolutionizes the way students at the University of Pittsburgh engage with their study materials. By simply uploading your handwritten notes and specifying your course, the platform provides a suite of AI powered tools to enhance your learning journey:
+missedmylecture revolutionizes the way students at the University of Pittsburgh engage with their study materials. By simply uploading your handwritten notes and specifying your course, the platform provides a suite of AI powered tools to enhance your learning journey:
 
 1. **Elegant Notes Conversion**: Transforms your handwritten notes into a clean, professionally typeset PDF using LaTeX.
 
