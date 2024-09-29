@@ -23,7 +23,9 @@ PDF_FOLDER = "app/static/pdf"
 genai.configure(api_key=GEMINI_API)
 model = genai.GenerativeModel("gemini-1.5-flash")
 
-def get_youtube_queries(genai_file) -> str:
+chats = {}
+
+def get_youtube_queries(file_id) -> str:
     YT_PROMPT = """Provide four youtube search queries that effectively recaps the content of this latex document.
     Provide each search query separated by newline characters. Do not include any other text in your response.
     Focus on section titles, key terms, and methods.
@@ -35,9 +37,8 @@ def get_youtube_queries(genai_file) -> str:
     - "properties of alkaline metals"
     """
 
-    response = model.generate_content(
-        [genai_file, "\n\n", YT_PROMPT]
-    )
+    chat = chats[file_id]
+    response = chat.send_message(YT_PROMPT)
     return response.text
 
 def get_video_details(video_id):
@@ -80,7 +81,7 @@ def youtube_search(query, max_results=1):
         results.append(video_info)
     return results
 
-def notes_to_latex(filepath: str) -> str:
+def notes_to_latex(file_id: str) -> str:
     LATEX_PROMPT = """
     Convert these lecture notes to latex.
     Add headers and sections, so that the notes are easy to read.
@@ -92,10 +93,8 @@ def notes_to_latex(filepath: str) -> str:
     Return just the latex code, nothing else.
     """
 
-    sample_file = genai.upload_file(filepath)
-    response = model.generate_content(
-        [sample_file, "\n\n", LATEX_PROMPT]
-    )
+    chat = chats[file_id]
+    response = chat.send_message(LATEX_PROMPT)
     return response.text
 
 def save_latex(latex: str, filepath: str):
@@ -115,29 +114,29 @@ def compile_latex(filepath: str) -> None:
 def upload_latex(latex_fp: str) -> str:
     return genai.upload_file(latex_fp)
 
-def make_glossary(genai_file):
+def make_glossary(file_id):
     GLOSSARY_PROMPT = r"""
     Make a glossary of key definitions in the latex file.
     Return your glossary as a JSON string in plain text (do not use \n or \t, markdown, or latex).
 
     EXAMPLE: "\begin{document} A natural number is a whole number greater than 0. \end{document}" -> {"natural number": "a whole number greater than 0"}
     """
-    response = model.generate_content([genai_file, GLOSSARY_PROMPT])
-    # print(response.text)
+    chat = chats[file_id]
+    response = chat.send_message(GLOSSARY_PROMPT)
     return json.loads(response.text)
 
-def make_summary(genai_file):
+def make_summary(file_id):
     SUMMARY_PROMPT = r"""
     Make a summary of the content and key ideas in the latex file.
     Return your summary in plain text (without any markdown elements).
 
     EXAMPLE: "\begin{document} The function $f$ maps $x \in \mathbb{R}$ to $\sqrt{x}$. \end{document}" -> "f maps x to the square root of x."
     """
-    response = model.generate_content([genai_file, SUMMARY_PROMPT])
-    # print(response.text)
+    chat = chats[file_id]
+    response = chat.send_message(SUMMARY_PROMPT)
     return response.text
 
-def make_quiz(genai_file):
+def make_quiz(file_id):
     # prompt = r'''The following is a latex file that compiles notes and references for some class. 
     # I am taking this class and I want you to be a TA. Make me a small quiz on this material. 
     # Give me questions on each line. Start with definitions in a multiple choice question format. 
@@ -163,21 +162,21 @@ def make_quiz(genai_file):
             }
         }"
     """
-    response = model.generate_content([genai_file, QUIZ_PROMPT])
+    chat = chats[file_id]
+    response = chat.send_message(QUIZ_PROMPT)
     return json.loads(response.text)
 
-def get_response(message, latex, message_history):
-    prompt = '''The compiled notes and chat history are all for context:
-    This is a compiled version of my notes. 
-    {latex}
-    This is the chat history we have: 
-    {message_history}
-    This is my question:
-    {question}'''
-    response = model.generate(message)
-    return response.txt
+def get_response(message, file_id):
+    RESPONSE_PROMPT = r"""
+    You are a teaching assistant for this course, and these are my notes.
+    Respond to the following prompt in 2-3 sentences.
+    Do not include any control sequences (\t or \n), latex, or markdown.
+    """
+    chat = chats[file_id]
+    response = chat.send_message([RESPONSE_PROMPT, message])
+    return response.text
 
-def get_page_number_from_gemini(content, genai_file):
+def get_page_number_from_gemini(content, file_id):
     """
     Interact with the Gemini API to find the page number closest to the description.
 
@@ -215,7 +214,8 @@ def get_page_number_from_gemini(content, genai_file):
     }
 
     try:
-        response = model.generate_content([genai_file, prompt])
+        chat = chats[file_id]
+        response = chat.send_message(prompt)
         # response.raise_for_status()  # Raise an HTTPError if the HTTP request returned an unsuccessful status code
 
         # page_number = 
@@ -285,31 +285,36 @@ def get_page_link(course, genai_file):
 
 async def start_processing(course, file_id):
     file = f"{UPLOAD_FOLDER}/{file_id}.pdf"
-    latex = notes_to_latex(file)
+    genai_file = genai.upload_file(file)
+    chat = model.start_chat()
+    chat.send_message(genai_file)
+    chats[file_id] = chat
+    
+    latex = notes_to_latex(file_id)
     latex_fp = f"{PDF_FOLDER}/{file_id}.txt"
     save_latex(latex, latex_fp)
     print("latex saved")
     genai_file = upload_latex(latex_fp)
-    glossary = make_glossary(genai_file)
-    summary = make_summary(genai_file)
+    glossary = make_glossary(file_id)
+    summary = make_summary(file_id)
     compile_latex(latex_fp)
     print("compiled latex")
-    queries = get_youtube_queries(genai_file)
+    queries = get_youtube_queries(file_id)
     # print(queries)
     vids = []
     i = 0
     for q in queries.splitlines():
-        if i == 4**(1/2) + (5 * 5 == 27 - 2): break
+        if i == 4**(1/2) + ((5 * 5 == 27 - 2) + 1) ** 2 / 2: break
         else: i += (True != False)
         vids.append(youtube_search(q))
-    link = get_page_link(course, genai_file)
+    link = get_page_link(course, file_id)
 
     return {
         "filepath": f"{file_id}.pdf",
         "glossary": glossary,
         "summary": summary,
         "link": link,
-        "videos": vids
+        "videos": vids,
     }
 
 def quiz_processing(file_id):

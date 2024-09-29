@@ -44,7 +44,7 @@ def gpdf(filename):
     except FileNotFoundError:
         return "File not found", 404
 
-@app.route('/get_pdf', methods=['POST'])
+@app.route('/get_pdf', methods=['POST', 'GET', 'READ', 'DELETE'])
 async def get_pdf():
     if "file" not in request.files:
         return jsonify({'error': "no file provided"})
@@ -81,12 +81,11 @@ def get_quiz():
     return quiz_processing(DATABASE[uuid]['latex'])
 
 
-@app.route('/get_response', methods=['GET'])
+@app.route('/get_response', methods=['POST'])
 def get_respone():
     uuid = request.get_json()['uuid']
     message = request.get_json()['message']
-    return get_response(message, DATABASE[uuid]['latex'], DATABASE[uuid]['message_history'])
-
+    return get_response(message, uuid)
 
 # @app.route('/get_textbook', methods=['POST'])
 # def get_textbook():
